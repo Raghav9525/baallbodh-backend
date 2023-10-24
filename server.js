@@ -27,6 +27,14 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error getting a database connection:', err);
+  }else{
+    console.log("connectionn successful");
+  }
+});
+
 // Create storage object to set filename and destination
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -137,6 +145,7 @@ app.get('/admin/studentdata', (req, res) => {
 
 // route for admission request
 app.post('/admission', (req, res) => {
+  console.log("admission route")
 
   const sql = "INSERT INTO admission_req(`name`, `mobile`, `gender`,`class`,`pay_method`) VALUES (?,?,?,?,?)";
   const value = [
@@ -152,7 +161,11 @@ app.post('/admission', (req, res) => {
   pool.getConnection((err, connection) => {
     // execute query using connection object
     connection.query(sql, value, (err, data) => {
+      if(err){
+        console.log(err);
+      }
       connection.release(); // Release the connection when done
+      console.log("Student data inserted");
       return res.json(data);
     });
   });
